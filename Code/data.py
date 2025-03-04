@@ -8,7 +8,7 @@ import numpy as np
 #from sklearn.preprocessing import StandardScaler
 
 from sklearn.preprocessing import StandardScaler
-#from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split, GridSearchCV
 #from sklearn.metrics import classification_report, confusion_matrix
 #from sklearn.neighbors import KNeighborsClassifier
 #from sklearn.svm import SVC
