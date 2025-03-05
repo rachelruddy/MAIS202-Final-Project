@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import random as rand
 
 #import matplotlib.pyplot as plt
 #import seaborn as sns
@@ -8,6 +9,7 @@ import numpy as np
 #from sklearn.preprocessing import StandardScaler
 
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split, GridSearchCV
 #from sklearn.metrics import classification_report, confusion_matrix
 #from sklearn.neighbors import KNeighborsClassifier
@@ -20,6 +22,25 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from scipy.stats import chi2_contingency, boxcox
 #from statsmodels.formula.api import ols
 #from statsmodels.stats.anova import anova_lm
+
+def split_data(data, split):
+    # transpose x once to make it D * N, and take the first 18 rows ( all 6 features ). Transpose again to make it back into the model we want
+    # x - finally is N * D
+    x = np.transpose(np.transpose(data)[:18])
+
+    # transpose y once, because they want y in as an array [1,2,3,4...]
+    # we only to take one of the output features, we only a one dimensional ouptut with 2 possible qualitiative values.
+    #  Col [18]: NB | Col [19]: B. Take Col 18 - one collum from a D * N matrix is a 1 * N matrix
+    y = np.transpose(data)[18]
+
+    split_index = int(x.shape[0] * split)
+    training_set_x = x[:split_index]
+    test_set_x = x[split_index:]
+    training_set_y = y[:split_index]
+    test_set_y = y[split_index:]
+
+    return training_set_x, test_set_x, training_set_y, test_set_y, split_index
+
 
 data = pd.read_csv("Maternal Health Risk Data Set.csv")
 print(data.info())
@@ -84,5 +105,18 @@ scaler = StandardScaler()
 scaler.fit(X)
 X_scaled = scaler.transform(X)
 
-#split into train and test
-X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=101, stratify=y)
+# create the encoder and encode the data
+enc = OneHotEncoder(handle_unknown='ignore')
+enc.fit(df_transformed)
+print("Encoding categories:")
+print(enc.categories_)  # shows the one-hot encoding format for the data
+
+# N * D matrix
+# convert it to one hot encoded data
+one_hot_encoded_data = enc.transform(df_transformed).toarray()
+# randomize the data - right now is random
+rand.shuffle(one_hot_encoded_data)  # since data taken in is sorted by feature
+print("\nVisualized one hot encoded data, for first row:")
+print(one_hot_encoded_data[0]) # gives a list of 20 features ( 6 * 3 for the features, 2 for the output features ( B or NB ))
+
+X_train, X_test, Y_train, Y_test = train_test_split(X_bias, Y_encoded, test_size=0.2, random_state=42)
