@@ -18,7 +18,7 @@ def softmax(z):
 
 class logisticRegression:
 
-    def __init__(self, learning_rate=0.01, max_iters=500, epsilon=0.0001):
+    def __init__(self, learning_rate, max_iters, epsilon):
         self.learning_rate = learning_rate
         self.epsilon = epsilon  # represents termination condition (smallest objective change)
         self.max_iters = max_iters  # maximum number of iterations of gradient descent
