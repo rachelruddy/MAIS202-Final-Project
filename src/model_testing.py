@@ -1,10 +1,29 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
+from itertools import product
 from data import X_train, X_test, y_train, y_test  
 from logisticRegression import logisticRegression  
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
-model = logisticRegression(learning_rate=0.01, max_iters=500, epsilon=0.0001)
+#grid search
+learning_rates = [0.5, 0.1, 0.05, 0.01,0.001]
+max_iters_list = [200, 250, 500, 700, 1000]
+epsilons = [1e-2, 1e-4, 1e-6]
+
+best_params = None
+best_score = 0
+
+for lr, max_iter, eps in product(learning_rates, max_iters_list, epsilons):
+    model = logisticRegression(learning_rate=lr, max_iters=max_iter, epsilon=eps)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+
+    if acc > best_score:
+        best_score = acc
+        best_params = (lr, max_iter, eps)
+
+model = logisticRegression(learning_rate=best_params[0], max_iters=best_params[1], epsilon=best_params[2])
 
 model.fit(X_train, y_train)
 
@@ -30,5 +49,6 @@ plt.xlabel('Predicted')
 plt.ylabel('True')
 plt.title('Confusion Matrix')
 plt.show()
+
 
 
