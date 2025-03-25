@@ -90,13 +90,30 @@ y = y.astype(int) # Ensure y is integer type BEFORE split
 #split into train and test
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=101, stratify=y)
 
+###
+###
+# Check the size of train and test sets
+print(f"Train set size: {X_train.shape[0]}")
+print(f"Test set size: {X_test.shape[0]}")
+
+# Check class distribution in training and test sets
+import collections
+print("Class distribution in full dataset:", collections.Counter(y))
+print("Class distribution in training set:", collections.Counter(y_train))
+print("Class distribution in test set:", collections.Counter(y_test))
+###
+###
+
+
 #feature scaling
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-smote = SMOTE(random_state=42)
-X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
 
-X_train = X_train_resampled
-y_train = y_train_resampled
+#apply smote 
+# smote = SMOTE(random_state=42)
+# X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+
+# X_train = X_train_resampled
+# y_train = y_train_resampled

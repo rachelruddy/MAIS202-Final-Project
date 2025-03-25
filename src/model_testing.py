@@ -1,28 +1,53 @@
 import seaborn as sns
 import matplotlib.pyplot as plt
+import numpy as np
 from itertools import product
 from data import X_train, X_test, y_train, y_test  
 from logisticRegression import logisticRegression  
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.model_selection import StratifiedKFold
+from imblearn.over_sampling import SMOTE
 
-#grid search
-learning_rates = [0.5, 0.1, 0.05, 0.01,0.001]
-max_iters_list = [200, 250, 500, 700, 1000]
-epsilons = [1e-2, 1e-4, 1e-6]
+# define hyperparameter search space
+learning_rates = [0.01, 0.005, 0.001, 0.0005, 0.0001]
+max_iters_list = [500, 1000, 1500, 2000]
+epsilons = [1e-3, 1e-5, 1e-7]
+
+# initialize cross-validation (stratified k-fold)
+kf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
 
 best_params = None
 best_score = 0
 
+# grid search implemented with cross-validation
 for lr, max_iter, eps in product(learning_rates, max_iters_list, epsilons):
-    model = logisticRegression(learning_rate=lr, max_iters=max_iter, epsilon=eps)
-    model.fit(X_train, y_train)
-    y_pred = model.predict(X_test)
-    acc = accuracy_score(y_test, y_pred)
+    fold_accuracies = []  
+    
+    # perform cross-validation
+    for train_index, val_index in kf.split(X_train, y_train):
+        X_train_fold, X_val_fold = X_train[train_index], X_train[val_index]
+        y_train_fold, y_val_fold = y_train[train_index], y_train[val_index]
 
-    if acc > best_score:
-        best_score = acc
+        # apply SMOTE inside the fold
+        smote = SMOTE(random_state=42)
+        X_train_fold, y_train_fold = smote.fit_resample(X_train_fold, y_train_fold)
+
+        # train and evaluate model
+        model = logisticRegression(learning_rate=lr, max_iters=max_iter, epsilon=eps)
+        model.fit(X_train_fold, y_train_fold)
+        y_pred_fold = model.predict(X_val_fold)
+        fold_accuracies.append(accuracy_score(y_val_fold, y_pred_fold))
+    
+    #compute average accuracy
+    avg_acc = sum(fold_accuracies) / len(fold_accuracies)
+
+    # update best parameters
+    if avg_acc > best_score:
+        best_score = avg_acc
         best_params = (lr, max_iter, eps)
 
+# train the final model using the best hyperparameters on the full training set
+print(f"Best Hyperparameters: LR={best_params[0]}, Max Iters={best_params[1]}, Epsilon={best_params[2]}")
 model = logisticRegression(learning_rate=best_params[0], max_iters=best_params[1], epsilon=best_params[2])
 
 model.fit(X_train, y_train)
