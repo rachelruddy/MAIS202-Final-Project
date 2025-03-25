@@ -10,21 +10,24 @@ import seaborn as sns
 
 #softmax function
 def softmax(z):
-    exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))  #subtract constant vector to avoid overflow errors
-    return exp_z/np.sum(exp_z, axis=1, keepdims=True) #calculate sofmax for all values in z matrix 
+    z = z - np.max(z, axis=1, keepdims=True)  # Subtract row-wise max for stability
+    exp_z = np.exp(z)
+    return exp_z / np.sum(exp_z, axis=1, keepdims=True)
+
 
 #each row represents a datapoint, each column represnts a class; a point represents the probability (0-1) that a datapoint is in that class; for row i: [e^z(i0)/e^z(i0)+e^z(i1)+e^z(i2), e^z(i1)/e^z(i0)+e^z(i1)+e^z(i2), e^z(i2)/e^z(i0)+e^z(i1)+e^z(i2)]
 
 
 class logisticRegression:
 
-    def __init__(self, learning_rate=0.01, max_iters=500, epsilon=0.0001):
+    def __init__(self, learning_rate, max_iters, epsilon):
         self.learning_rate = learning_rate
         self.epsilon = epsilon  # represents termination condition (smallest objective change)
         self.max_iters = max_iters  # maximum number of iterations of gradient descent
 
     def one_hot_encoded (self, y, num_classes):
         #converts labels to one-hot encoding form (N x K matrix)
+        y = y.astype(int)
         Y_one_hot = np.zeros((y.shape[0], num_classes))
         Y_one_hot[np.arange(y.shape[0]), y] = 1 
         return Y_one_hot
@@ -32,7 +35,7 @@ class logisticRegression:
     #train the weights
     def fit(self, x, y): 
         x = np.c_[np.ones(x.shape[0]), x] #add a column of 1's at the start of X for biases
-        K = 3    #number of classes (high, low, or mid risk)
+        K = len(np.unique(y))   #number of classes (high, low, or mid risk)
         Y = self.one_hot_encoded(y,K)
         N, D = x.shape #x is datapoints by features matrix; N is number of women tested; D is number of features
        
@@ -60,7 +63,8 @@ class logisticRegression:
         x = np.c_[np.ones(x.shape[0]), x] #add a column of 1's at the start of x for biases
         Z = np.dot(x, self.W)
         P = softmax(Z)
-        return np.argmax(P, axis=1) #returns an array of predicted class labels of each point (by highest probability of each row/datapoint)
+        predictions = np.argmax(P, axis=1)
+        return predictions.astype(int) #returns an array of predicted class labels of each point (by highest probability of each row/datapoint)
         
 
 
