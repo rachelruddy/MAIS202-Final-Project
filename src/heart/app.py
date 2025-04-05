@@ -6,15 +6,15 @@ import seaborn as sns
 import numpy as np
 import os
 from data import X_test, y_test
-from logisticRegression import logisticRegression
-from model_testing import best_params
+from logRegHeartDisease import logRegHeartDisease
+from model_testing import best_params, y_pred
 from sklearn.metrics import accuracy_score, confusion_matrix
 
 app = Flask(__name__)
 
 def train_model():
     global accuracy
-    model = logisticRegression(learning_rate=best_params[0], max_iters=best_params[1], epsilon=best_params[2])
+    model = logRegHeartDisease(learning_rate=best_params[0], max_iters=best_params[1], epsilon=best_params[2])
     model.fit(X_test, y_test)
     y_pred = model.predict(X_test)
 

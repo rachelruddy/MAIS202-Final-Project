@@ -7,11 +7,13 @@ from logisticRegression import logisticRegression
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 from sklearn.model_selection import StratifiedKFold
 from imblearn.over_sampling import SMOTE
+from sklearn.neighbors import KNeighborsClassifier
 
 # define hyperparameter search space
 learning_rates = [0.01, 0.005, 0.001, 0.0005, 0.0001]
 max_iters_list = [500, 1000, 1500, 2000]
 epsilons = [1e-3, 1e-5, 1e-7]
+reg_lambdas = [0.1, 0.01, 0.001]
 
 # initialize cross-validation (stratified k-fold)
 kf = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
@@ -20,7 +22,7 @@ best_params = None
 best_score = 0
 
 # grid search implemented with cross-validation
-for lr, max_iter, eps in product(learning_rates, max_iters_list, epsilons):
+for lr, max_iter, eps, reg_lambdas in product(learning_rates, max_iters_list, epsilons, reg_lambdas):
     fold_accuracies = []  
     
     # perform cross-validation
@@ -64,7 +66,7 @@ colors = ['#f19ef7', '#fcffa8']
 plt.figure(figsize=(5,5))
 plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%')
 plt.title('Model Accuracy')
-plt.show
+plt.show()
 
 #generate confusion matrix
 cm = confusion_matrix(y_test, y_pred)
@@ -74,6 +76,3 @@ plt.xlabel('Predicted')
 plt.ylabel('True')
 plt.title('Confusion Matrix')
 plt.show()
-
-
-
