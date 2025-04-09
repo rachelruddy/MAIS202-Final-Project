@@ -63,7 +63,7 @@ We implemented a **logistic regression** model to predict heart disease presence
 <img width="447" alt="image" src="https://github.com/user-attachments/assets/df4ff829-fd38-4cef-a92b-0eac1f6cccc9" />
 
 ![image](https://github.com/user-attachments/assets/80be7ee9-26c2-4197-b32e-adefa200c1c4)
-![image](https://github.com/user-attachments/assets/3390b303-9ab4-4f95-bd7d-8b340785e751)
+![ConfusionMatrixMAIS](https://github.com/user-attachments/assets/540ae5e0-e22c-4386-ba73-68b6eec0795f)
 
 > *(Note: Be sure to include your actual chart images in a `results/` folder and update the file names above if needed.)*
 
