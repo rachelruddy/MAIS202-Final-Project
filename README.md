@@ -23,7 +23,7 @@ Heart disease remains one of the leading causes of death worldwide. Early detect
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone <https://github.com/rachelruddy/MAIS202-Final-Project.git>
 cd MAIS202-Final-Project
 ```
 
